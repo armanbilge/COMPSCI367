@@ -1,4 +1,7 @@
+fatherOf(Father, Person) :-
+    parentOf(Father, Person),
+    male(Father).
+
 lawpa(Lawpa, Person) :-
     spouseOf(Spouse, Person),
-    parentOf(Lawpa, Spouse),
-    male(Lawpa).
+    fatherOf(Lawpa, Spouse).

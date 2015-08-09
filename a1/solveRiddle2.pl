@@ -6,9 +6,9 @@ sonOf(Son, Person) :-
     parentOf(Person, Son),
     male(Son).
 
-solveRiddle1(ManLooking, ManInPortrait) :-
+solveRiddle2(ManLooking, ManInPortrait) :-
     male(ManLooking),
     male(ManInPortrait),
-    fatherOf(Father, ManInPortrait),
-    fatherOf(MyFather, ManLooking),
-    sonOf(Father, MyFather).
+    sonOf(Son, ManInPortrait),
+    sonOf(MySon, ManLooking),
+    fatherOf(Son, MySon).
