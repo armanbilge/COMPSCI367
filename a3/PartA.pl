@@ -4,8 +4,7 @@ initiate_smaller
         criterion(A) and
         object(X) and
         not(sorted(X)) and
-        object(Y) and
-        not(smallest(Y, A))
+        not(object(Y) and smallest(Y, A))
     then
         add(try_find_smallest(A)) and
         add(smallest(X, A))).
@@ -39,8 +38,7 @@ initiate_sort
         try_sort(A) and
         object(X) and
         smallest(X, A) and
-        object(Y) and
-        not(sorted(Y))
+        not(object(Y) and sorted(Y))
     then
         remove(try_sort(A)) and
         remove(smallest(X, A)) and
