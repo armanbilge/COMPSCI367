@@ -43,7 +43,7 @@ initiate_sort
         remove(try_sort(A)) and
         remove(smallest(X, A)) and
         add(sorted(X)) and
-        add(latest_processed(X)) and
+        add(latest(X)) and
         remove(criterion(A)) and
         add(criterion(A))).
 
@@ -55,13 +55,13 @@ extend_sort
         smallest(X, A) and
         object(Y) and
         sorted(Y) and
-        latest_processed(Y)
+        latest(Y)
     then
         remove(try_sort(A)) and
         remove(smallest(X, A)) and
         add(sorted(X)) and
-        remove(latest_processed(Y)) and
-        add(latest_processed(X)) and
+        remove(latest(Y)) and
+        add(latest(X)) and
         add(left_of(X, Y)) and
         remove(criterion(A)) and
         add(criterion(A))).
