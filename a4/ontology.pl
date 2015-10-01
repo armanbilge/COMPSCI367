@@ -1,11 +1,3 @@
-%%%%%%%%%%%%%%%
-%
-%  This is the skeletal ontology file, you need to add
-%  the declarations of your predicates to this file
-%
-%%%%%%%%%%%%%%%
-
-
 %% static predicates info
 :- dynamic static/1.
 static(width/1).
@@ -18,17 +10,27 @@ fluent(Pred/Arity) :- not(static(Pred/Arity)).
 
 %% derived predicates info
 :- dynamic derived/1.
-:- dynamic locationRowColumn/3.
-derived(locationRowColumn/3).
+:- dynamic location/3.
+derived(location/3).
 %%%% L represents row R and column C
-locationRowColumn(L, R, C) :- width(W), isExpression(L, R * W + C).
-:- dynamic inGrid/1.
-derived(inGrid/1).
-inGrid(L) :- width(W), height(H), locationRowColumn(L, R, C), expression(R < H), expression(C < W).
+location(L, R, C) :- width(W), isExpression(L, R * W + C).
+:- dynamic rowColumn/3.
+derived(rowColumn/3).
+%%%% L represents row R and column C
+rowColumn(L, R, C) :- width(W), isExpression(R, L // W), isExpression(C, L mod W).
+:- dynamic inGrid/2.
+derived(inGrid/2).
+%%%% L is in the grid
+inGrid(R, C) :- width(W),
+             height(H),
+             expression(0 =< R),
+             expression(R < H),
+             expression(0 =< C),
+             expression(C < W).
 :- dynamic occupies/2.
 derived(occupies/2).
-% occupies(V, L) :- hoodAt(V, L).
-% occupies(V, L) :- trunkAt(V, L).
+% occupies(V, L) :- atHood(V, L).
+% occupies(V, L) :- atTrunk(V, L).
 % occupies(V, L) :- locationRowColumn(L, R, C),
 %                   isExpression(Q, R + 1),
 %                   isExpression(S, R - 1),
@@ -43,53 +45,59 @@ derived(occupies/2).
 %                   locationRowColumn(N, S, C),
 %                   occupies(V, M),
 %                   occupies(V, N).
-occupies(V, L) :- locationRowColumn(L, _, C),
-                  locationRowColumn(M, _, C),
-                  locationRowColumn(N, _, C),
-                  hoodAt(V, M),
-                  trunkAt(V, N).
-occupies(V, L) :- locationRowColumn(L, R, _),
-                  locationRowColumn(M, R, _),
-                  locationRowColumn(N, R, _),
-                  hoodAt(V, M),
-                  trunkAt(V, N).
+occupies(V, L) :- atHood(V, M),
+                  atTrunk(V, N),
+                  rowColumn(L, R, C),
+                  rowColumn(M, R1, C),
+                  rowColumn(N, R2, C),
+                  expression(R =< R1),
+                  expression(R >= R2).
+occupies(V, L) :- atHood(V, M),
+                  atTrunk(V, N),
+                  rowColumn(L, R, C),
+                  rowColumn(M, R1, C),
+                  rowColumn(N, R2, C),
+                  expression(R =< R2),
+                  expression(R >= R1).
+occupies(V, L) :- atHood(V, M),
+                  atTrunk(V, N),
+                  rowColumn(L, R, C),
+                  rowColumn(M, R, C1),
+                  rowColumn(N, R, C2),
+                  expression(C =< C1),
+                  expression(C >= C2).
+occupies(V, L) :- atHood(V, M),
+                  atTrunk(V, N),
+                  rowColumn(L, R, C),
+                  rowColumn(M, R, C1),
+                  rowColumn(N, R, C2),
+                  expression(C =< C2),
+                  expression(C >= C1).
 :- dynamic occupied/1.
 derived(occupied/1).
 occupied(L) :- occupies(_, L).
 :- dynamic direction/3.
 derived(direction/3).
-direction(V, R, C) :- hoodAt(V, H),
-                      trunkAt(V, T),
-                      locationRowColumn(H, RH, CH),
-                      locationRowColumn(T, RT, CT),
-                      expression(RH > RT),
-                      expression(CH = CT),
-                      expression(R = 1),
-                      expression(C = 0).
-direction(V, R, C) :- hoodAt(V, H),
-                      trunkAt(V, T),
-                      locationRowColumn(H, RH, CH),
-                      locationRowColumn(T, RT, CT),
-                      expression(RH < RT),
-                      expression(CH = CT),
-                      expression(R = -1),
-                      expression(C = 0).
-direction(V, R, C) :- hoodAt(V, H),
-                      trunkAt(V, T),
-                      locationRowColumn(H, RH, CH),
-                      locationRowColumn(T, RT, CT),
-                      expression(RH = RT),
-                      expression(CH > CT),
-                      expression(R = 0),
-                      expression(C = 1).
-direction(V, R, C) :- hoodAt(V, H),
-                      trunkAt(V, T),
-                      locationRowColumn(H, RH, CH),
-                      locationRowColumn(T, RT, CT),
-                      expression(RH = RT),
-                      expression(CH < CT),
-                      expression(R = 0),
-                      expression(C = -1).
+direction(V, 1, 0) :- atHood(V, H),
+                      atTrunk(V, T),
+                      rowColumn(H, RH, C),
+                      rowColumn(T, RT, C),
+                      expression(RH > RT).
+direction(V, -1, 0) :- atHood(V, H),
+                       atTrunk(V, T),
+                       rowColumn(H, RH, C),
+                       rowColumn(T, RT, C),
+                       expression(RH < RT).
+direction(V, 0, 1) :- atHood(V, H),
+                      atTrunk(V, T),
+                      rowColumn(H, R, CH),
+                      rowColumn(T, R, CT),
+                      expression(CH > CT).
+direction(V, 0, -1) :- atHood(V, H),
+                       atTrunk(V, T),
+                       rowColumn(H, R, CH),
+                       rowColumn(T, R, CT),
+                       expression(CH < CT).
 
 %% primitive predicates info
 :- dynamic primitive/1.
