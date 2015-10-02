@@ -9,19 +9,19 @@ cost(_, _, 1).
 
 op(reverse,
    %% reverse V
-   [V],
-   [atHood(V, H),
-    atTrunk(V, T)],
-   [atHood(V, T),
-    atTrunk(V, H),
-    not(atHood(V, H),
-    not(atTrunk(V, T)))]).
+   [V, H, T],
+   [hoodAt(V, H),
+    trunkAt(V, T)],
+   [hoodAt(V, T),
+    trunkAt(V, H),
+    not(hoodAt(V, H)),
+    not(trunkAt(V, T))]).
 
 op(move,
    %% move V forward one grid square
-   [V],
-   [atHood(V, H),
-    atTrunk(V, T),
+   [V, H, T, RH, CH, RT, CT, RD, CD, RHM, CHM, RTM, CTM, HM, TM],
+   [hoodAt(V, H),
+    trunkAt(V, T),
     rowColumn(H, RH, CH),
     rowColumn(T, RT, CT),
     direction(V, RD, CD),
@@ -33,7 +33,7 @@ op(move,
     location(TM, RTM, CTM),
     inGrid(RHM, CHM),
     not(occupied(HM))],
-   [atHood(V, HM),
-    atTrunk(V, TM),
-    not(atHood(V, H)),
-    not(atTrunk(V, T))]).
+   [hoodAt(V, HM),
+    trunkAt(V, TM),
+    not(hoodAt(V, H)),
+    not(trunkAt(V, T))]).

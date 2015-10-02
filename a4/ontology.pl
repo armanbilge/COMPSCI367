@@ -20,54 +20,38 @@ derived(rowColumn/3).
 rowColumn(L, R, C) :- width(W), isExpression(R, L // W), isExpression(C, L mod W).
 :- dynamic inGrid/2.
 derived(inGrid/2).
-%%%% L is in the grid
+%%%% Square (R, C) is in the grid
 inGrid(R, C) :- width(W),
-             height(H),
-             expression(0 =< R),
-             expression(R < H),
-             expression(0 =< C),
-             expression(C < W).
+                height(H),
+                expression(0 =< R),
+                expression(R < H),
+                expression(0 =< C),
+                expression(C < W).
 :- dynamic occupies/2.
 derived(occupies/2).
-% occupies(V, L) :- atHood(V, L).
-% occupies(V, L) :- atTrunk(V, L).
-% occupies(V, L) :- locationRowColumn(L, R, C),
-%                   isExpression(Q, R + 1),
-%                   isExpression(S, R - 1),
-%                   locationRowColumn(M, Q, C),
-%                   locationRowColumn(N, S, C),
-%                   occupies(V, M),
-%                   occupies(V, N).
-% occupies(V, L) :- locationRowColumn(L, R, C),
-%                   isExpression(Q, R + 1),
-%                   isExpression(S, R - 1),
-%                   locationRowColumn(M, Q, C),
-%                   locationRowColumn(N, S, C),
-%                   occupies(V, M),
-%                   occupies(V, N).
-occupies(V, L) :- atHood(V, M),
-                  atTrunk(V, N),
+occupies(V, L) :- hoodAt(V, M),
+                  trunkAt(V, N),
                   rowColumn(L, R, C),
                   rowColumn(M, R1, C),
                   rowColumn(N, R2, C),
                   expression(R =< R1),
                   expression(R >= R2).
-occupies(V, L) :- atHood(V, M),
-                  atTrunk(V, N),
+occupies(V, L) :- hoodAt(V, M),
+                  trunkAt(V, N),
                   rowColumn(L, R, C),
                   rowColumn(M, R1, C),
                   rowColumn(N, R2, C),
                   expression(R =< R2),
                   expression(R >= R1).
-occupies(V, L) :- atHood(V, M),
-                  atTrunk(V, N),
+occupies(V, L) :- hoodAt(V, M),
+                  trunkAt(V, N),
                   rowColumn(L, R, C),
                   rowColumn(M, R, C1),
                   rowColumn(N, R, C2),
                   expression(C =< C1),
                   expression(C >= C2).
-occupies(V, L) :- atHood(V, M),
-                  atTrunk(V, N),
+occupies(V, L) :- hoodAt(V, M),
+                  trunkAt(V, N),
                   rowColumn(L, R, C),
                   rowColumn(M, R, C1),
                   rowColumn(N, R, C2),
@@ -78,23 +62,23 @@ derived(occupied/1).
 occupied(L) :- occupies(_, L).
 :- dynamic direction/3.
 derived(direction/3).
-direction(V, 1, 0) :- atHood(V, H),
-                      atTrunk(V, T),
+direction(V, 1, 0) :- hoodAt(V, H),
+                      trunkAt(V, T),
                       rowColumn(H, RH, C),
                       rowColumn(T, RT, C),
                       expression(RH > RT).
-direction(V, -1, 0) :- atHood(V, H),
-                       atTrunk(V, T),
+direction(V, -1, 0) :- hoodAt(V, H),
+                       trunkAt(V, T),
                        rowColumn(H, RH, C),
                        rowColumn(T, RT, C),
                        expression(RH < RT).
-direction(V, 0, 1) :- atHood(V, H),
-                      atTrunk(V, T),
+direction(V, 0, 1) :- hoodAt(V, H),
+                      trunkAt(V, T),
                       rowColumn(H, R, CH),
                       rowColumn(T, R, CT),
                       expression(CH > CT).
-direction(V, 0, -1) :- atHood(V, H),
-                       atTrunk(V, T),
+direction(V, 0, -1) :- hoodAt(V, H),
+                       trunkAt(V, T),
                        rowColumn(H, R, CH),
                        rowColumn(T, R, CT),
                        expression(CH < CT).
