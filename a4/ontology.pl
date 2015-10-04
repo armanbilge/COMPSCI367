@@ -13,11 +13,11 @@ fluent(Pred/Arity) :- not(static(Pred/Arity)).
 :- dynamic location/3.
 derived(location/3).
 %%%% L represents row R and column C
-location(L, R, C) :- width(W), isExpression(L, R * W + C).
+location(L, R, C) :- width(W), expression(L is R * W + C).
 :- dynamic rowColumn/3.
 derived(rowColumn/3).
 %%%% L represents row R and column C
-rowColumn(L, R, C) :- width(W), isExpression(R, L // W), isExpression(C, L mod W).
+rowColumn(L, R, C) :- width(W), expression(R is L // W), expression(C is L mod W).
 :- dynamic inGrid/2.
 derived(inGrid/2).
 %%%% Square (R, C) is in the grid
@@ -29,6 +29,7 @@ inGrid(R, C) :- width(W),
                 expression(C < W).
 :- dynamic occupies/2.
 derived(occupies/2).
+%% V occupies location L
 occupies(V, L) :- hoodAt(V, M),
                   trunkAt(V, N),
                   rowColumn(L, R, C),
@@ -59,9 +60,11 @@ occupies(V, L) :- hoodAt(V, M),
                   expression(C >= C1).
 :- dynamic occupied/1.
 derived(occupied/1).
+%% Location L is occupied (by a vehicle)
 occupied(L) :- occupies(_, L).
 :- dynamic direction/3.
 derived(direction/3).
+%% V is facing/moving in the (R, C) direction
 direction(V, 1, 0) :- hoodAt(V, H),
                       trunkAt(V, T),
                       rowColumn(H, RH, C),
@@ -90,11 +93,7 @@ primitive(Pred/Arity) :- not(derived(Pred/Arity)).
 
 %% metaLevel predicates info
 :- dynamic metaLevel/1.
-:- dynamic isExpression/2.
-metaLevel(isExpression/2).
-%%%% Z is equal to some expression
-isExpression(Z, Ex) :- Z is Ex.
-:-dynamic expression/1.
+:- dynamic expression/1.
 metaLevel(expression/1).
 %%%% Expression is true
 expression(Ex) :- Ex.
