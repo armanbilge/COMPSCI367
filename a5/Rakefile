@@ -1,0 +1,14 @@
+require 'open-uri'
+
+task :default => 'report.pdf'
+task 'report.pdf' => 'apa.csl'
+
+rule '.csl' do |t|
+  open(t.name, 'w') do |f|
+    f << open("https://raw.githubusercontent.com/citation-style-language/styles/master/#{t.name}").read
+  end
+end
+
+rule '.pdf' => '.md' do |t|
+  sh "pandoc -V geometry:margin=2.54cm --filter pandoc-citeproc --csl *.csl #{t.source} -o #{t.name}"
+end
